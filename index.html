@@ -300,11 +300,13 @@
             return url + (url.includes('?') ? '&' : '?') + 'ac=' + action;
         }
 
+        const PROXY_URL = 'https://withered-resonance-0d9d.952485896.workers.dev';
+
         async function fetchData(url, timeout = 20000) {
             const ctrl = new AbortController();
             const tid = setTimeout(() => ctrl.abort(), timeout);
             try {
-                const res = await fetch(url, { signal: ctrl.signal, mode: 'cors' });
+                const res = await fetch(`${PROXY_URL}/?url=${encodeURIComponent(url)}`, { signal: ctrl.signal });
                 clearTimeout(tid);
                 if (!res.ok) throw new Error(`HTTP ${res.status}`);
                 const text = await res.text();
