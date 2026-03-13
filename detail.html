@@ -132,17 +132,22 @@
             return url + (url.includes('?') ? '&' : '?') + 'ac=' + action;
         }
 
+        const PROXY_URL = 'https://withered-resonance-0d9d.952485896.workers.dev';
+
         async function fetchData(url, timeout = 25000) {
             const ctrl = new AbortController();
             const tid = setTimeout(() => ctrl.abort(), timeout);
             try {
-                const res = await fetch(url, { signal: ctrl.signal, mode: 'cors' });
+                const res = await fetch(`${PROXY_URL}/?url=${encodeURIComponent(url)}`, { signal: ctrl.signal });
                 clearTimeout(tid);
                 if (!res.ok) throw new Error(`HTTP ${res.status}`);
                 const text = await res.text();
                 try { return JSON.parse(text); }
                 catch { throw new Error(text.includes('<!DOCTYPE') ? 'API地址错误' : '数据格式错误'); }
-            } catch (e) { clearTimeout(tid); throw e.name === 'AbortError' ? new Error('请求超时') : e; }
+            } catch (e) {
+                clearTimeout(tid);
+                throw e.name === 'AbortError' ? new Error('请求超时') : e;
+            }
         }
 
         async function loadDetail(id) {
